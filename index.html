@@ -601,33 +601,54 @@
     0%   { transform: translateY(-6px); opacity: 0; }
     100% { transform: translateY(0); opacity: 1; }
   }
-  /* Music button */
-  .music-btn {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    z-index: 100;
-    width: 46px;
-    height: 46px;
+  /* Music widget */
+  .music-widget {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 20px 0 4px;
+    opacity: 0;
+    animation: fadeUp 0.9s ease 0.85s forwards;
+  }
+
+  .music-ring {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .music-label {
+    font-family: 'Noto Serif', serif;
+    font-style: normal;
+    font-size: 22px;
+    font-weight: 400;
+    letter-spacing: 3px;
+    color: #c9a96e;
+  }
+
+  .music-center-btn {
+    width: 70px;
+    height: 70px;
     border-radius: 50%;
     background: #faf5ee;
-    border: 0.5px solid rgba(201,169,110,0.6);
-    box-shadow: 0 4px 16px rgba(201,169,110,0.25);
+    border: 0.5px solid rgba(201,169,110,0.7);
+    box-shadow: 0 3px 14px rgba(201,169,110,0.22);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
+    transition: background 0.2s ease, transform 0.2s ease;
   }
 
-  .music-btn:hover {
+  .music-center-btn:hover {
     background: rgba(201,169,110,0.15);
-    transform: scale(1.08);
+    transform: scale(1.07);
   }
 
-  .music-btn svg {
-    width: 18px;
-    height: 18px;
+  .music-center-btn svg {
+    width: 26px;
+    height: 26px;
   }
 </style>
 </head>
@@ -636,18 +657,6 @@
 <!-- Background music -->
 <audio id="bg-music" src="music.mp3" loop preload="auto"></audio>
 
-<!-- Music control button -->
-<button class="music-btn" id="music-btn" onclick="toggleMusic()" title="Музыка">
-  <svg id="music-icon-play" viewBox="0 0 24 24" fill="none" stroke="#c9a96e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="12" cy="12" r="10"/>
-    <polygon points="10,8 16,12 10,16" fill="#c9a96e" stroke="none"/>
-  </svg>
-  <svg id="music-icon-pause" viewBox="0 0 24 24" fill="none" stroke="#c9a96e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:none">
-    <circle cx="12" cy="12" r="10"/>
-    <line x1="10" y1="8" x2="10" y2="16"/>
-    <line x1="14" y1="8" x2="14" y2="16"/>
-  </svg>
-</button>
 
 <div class="page">
   <div class="top-border"></div>
@@ -666,14 +675,18 @@
       <div class="top-label" id="txt-hero-label">Үйлену той · 2026</div>
 
       <div class="ornament-svg">
-        <svg width="180" height="48" viewBox="0 0 180 48" fill="none">
-          <path d="M90 6 L94 18 L108 18 L97 26 L101 38 L90 30 L79 38 L83 26 L72 18 L86 18 Z" stroke="#c9a96e" stroke-width="0.6" fill="rgba(201,169,110,0.08)"/>
-          <line x1="10" y1="24" x2="64" y2="24" stroke="#c9a96e" stroke-width="0.5" opacity="0.5"/>
-          <line x1="116" y1="24" x2="170" y2="24" stroke="#c9a96e" stroke-width="0.5" opacity="0.5"/>
-          <circle cx="10" cy="24" r="2.5" fill="none" stroke="#c9a96e" stroke-width="0.5" opacity="0.5"/>
-          <circle cx="170" cy="24" r="2.5" fill="none" stroke="#c9a96e" stroke-width="0.5" opacity="0.5"/>
-          <circle cx="22" cy="24" r="1.5" fill="#c9a96e" opacity="0.35"/>
-          <circle cx="158" cy="24" r="1.5" fill="#c9a96e" opacity="0.35"/>
+        <svg width="280" height="60" viewBox="0 0 280 60" fill="none">
+          <!-- Star enlarged 1.5x: original points scaled around center 90,24 → new center 140,30 -->
+          <path d="M140 8 L145 24 L163 24 L149 33 L154 49 L140 40 L126 49 L131 33 L117 24 L135 24 Z" stroke="#c9a96e" stroke-width="0.7" fill="rgba(201,169,110,0.08)"/>
+          <!-- Extended rays: left goes to x=4, right goes to x=276 -->
+          <line x1="4" y1="30" x2="108" y2="30" stroke="#c9a96e" stroke-width="0.5" opacity="0.5"/>
+          <line x1="172" y1="30" x2="276" y2="30" stroke="#c9a96e" stroke-width="0.5" opacity="0.5"/>
+          <!-- End circles -->
+          <circle cx="4" cy="30" r="2.5" fill="none" stroke="#c9a96e" stroke-width="0.5" opacity="0.5"/>
+          <circle cx="276" cy="30" r="2.5" fill="none" stroke="#c9a96e" stroke-width="0.5" opacity="0.5"/>
+          <!-- Inner accent dots -->
+          <circle cx="18" cy="30" r="1.5" fill="#c9a96e" opacity="0.35"/>
+          <circle cx="262" cy="30" r="1.5" fill="#c9a96e" opacity="0.35"/>
         </svg>
       </div>
 
@@ -687,6 +700,22 @@
         <div class="div-line"></div>
         <div class="div-dot"></div>
         <div class="div-line"></div>
+      </div>
+
+      <!-- Music widget -->
+      <div class="music-widget">
+        <div class="music-ring">
+          <button class="music-center-btn" onclick="toggleMusic()">
+            <svg id="music-icon-play" viewBox="0 0 24 24" fill="none" stroke="#c9a96e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="9,7 17,12 9,17" fill="#c9a96e" stroke="none"/>
+            </svg>
+            <svg id="music-icon-pause" viewBox="0 0 24 24" fill="none" stroke="#c9a96e" stroke-width="1.8" stroke-linecap="round" style="display:none">
+              <line x1="8" y1="6" x2="8" y2="18"/>
+              <line x1="16" y1="6" x2="16" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        <div class="music-label" id="txt-music-label">Әуен</div>
       </div>
     </div>
 
@@ -848,6 +877,7 @@
       'txt-name-bride':    'Арай',
       'txt-footer-names':  'Мейрам &amp; Арай',
       'txt-parents-names': 'Елжан мен Гүлзайда',
+      'txt-music-label':   'Әуен',
       'txt-hero-label':    'Үйлену той · 2026',
       'txt-invite-label':  'Құрметті қонақтарымыз',
       'txt-invite-body':   'Құрметті ағайын-туыс, бауырлар!<br>Қадірлі құда-жекжат, нағашы-жиендер!<br>Сыйлас дос-жарандар, әріптестер мен көршілер!',
@@ -879,6 +909,7 @@
       'txt-name-bride':    'Aray',
       'txt-footer-names':  'Meiram &amp; Aray',
       'txt-parents-names': 'Eljan ve Gülzayda',
+      'txt-music-label':   'Müzik',
       'txt-hero-label':    'Düğün · 2026',
       'txt-invite-label':  'Sevgili misafirlerimiz',
       'txt-invite-body':   'Sevgili akraba ve yakınlarımız!<br>Değerli dost ve komşularımız!',
@@ -910,6 +941,7 @@
       'txt-name-bride':    'Aray',
       'txt-footer-names':  'Meiram &amp; Aray',
       'txt-parents-names': 'Yelzhan &amp; Gulzaida',
+      'txt-music-label':   'Music',
       'txt-hero-label':    'Wedding · 2026',
       'txt-invite-label':  'Dear guests',
       'txt-invite-body':   'Dear family and relatives!<br>Dear friends, colleagues and neighbours!',
@@ -1038,15 +1070,21 @@
   const audio = document.getElementById('bg-music');
   let musicPlaying = false;
 
-  function toggleMusic() {
+  function startMusic() {
     const iconPlay  = document.getElementById('music-icon-play');
     const iconPause = document.getElementById('music-icon-pause');
-
-    if (!musicPlaying) {
-      audio.play();
+    audio.play().then(() => {
       iconPlay.style.display  = 'none';
       iconPause.style.display = 'block';
       musicPlaying = true;
+    }).catch(() => {});
+  }
+
+  function toggleMusic() {
+    const iconPlay  = document.getElementById('music-icon-play');
+    const iconPause = document.getElementById('music-icon-pause');
+    if (!musicPlaying) {
+      startMusic();
     } else {
       audio.pause();
       iconPlay.style.display  = 'block';
@@ -1054,6 +1092,18 @@
       musicPlaying = false;
     }
   }
+
+  // Try autoplay immediately
+  startMusic();
+
+  // If blocked, start on first user interaction
+  function onFirstTouch() {
+    if (!musicPlaying) startMusic();
+    document.removeEventListener('click', onFirstTouch);
+    document.removeEventListener('touchstart', onFirstTouch);
+  }
+  document.addEventListener('click', onFirstTouch);
+  document.addEventListener('touchstart', onFirstTouch);
 </script>
 </body>
 </html>
