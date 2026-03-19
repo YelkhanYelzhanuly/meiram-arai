@@ -655,7 +655,7 @@
 <body>
 
 <!-- Background music -->
-<audio id="bg-music" src="music.mp3" loop preload="auto"></audio>
+<audio id="bg-music" src="music.mp3" loop preload="auto" autoplay></audio>
 
 
 <div class="page">
@@ -1068,15 +1068,18 @@
 
   // ── Music ─────────────────────────────────────────────────────
   const audio = document.getElementById('bg-music');
+  audio.volume = 0.7;
   let musicPlaying = false;
 
   function startMusic() {
+    if (musicPlaying) return;
     const iconPlay  = document.getElementById('music-icon-play');
     const iconPause = document.getElementById('music-icon-pause');
     audio.play().then(() => {
       iconPlay.style.display  = 'none';
       iconPause.style.display = 'block';
       musicPlaying = true;
+      removeListeners();
     }).catch(() => {});
   }
 
@@ -1093,17 +1096,19 @@
     }
   }
 
-  // Try autoplay immediately
+  function removeListeners() {
+    ['click','touchstart','touchend','scroll','keydown','pointerdown'].forEach(e => {
+      document.removeEventListener(e, startMusic);
+    });
+  }
+
+  // Try immediately
   startMusic();
 
-  // If blocked, start on first user interaction
-  function onFirstTouch() {
-    if (!musicPlaying) startMusic();
-    document.removeEventListener('click', onFirstTouch);
-    document.removeEventListener('touchstart', onFirstTouch);
-  }
-  document.addEventListener('click', onFirstTouch);
-  document.addEventListener('touchstart', onFirstTouch);
+  // On ANY interaction — fires as soon as user scrolls or taps anything
+  ['click','touchstart','touchend','scroll','keydown','pointerdown'].forEach(e => {
+    document.addEventListener(e, startMusic, { once: true, passive: true });
+  });
 </script>
 </body>
 </html>
